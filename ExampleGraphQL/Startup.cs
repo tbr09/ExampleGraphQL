@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ExampleGraphQL.Contracts;
+﻿using ExampleGraphQL.Contracts;
 using ExampleGraphQL.Repositories;
+using ExampleGraphQL.Schemas;
+using GraphQL;
+using GraphQL.Server;
+using GraphQL.Server.Ui.Playground;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace GraphQL
+namespace ExampleGraphQL
 {
     public class Startup
     {
@@ -30,6 +27,17 @@ namespace GraphQL
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddTransient<IGuestRepository, GuestRepository>();
+
+            services.AddScoped<IDependencyResolver>(x =>
+                new FuncDependencyResolver(x.GetRequiredService));
+
+            services.AddScoped<GuestSchema>();
+
+            services.AddGraphQL(x =>
+            {
+                x.ExposeExceptions = true;
+            })
+            .AddGraphTypes(ServiceLifetime.Scoped);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +52,9 @@ namespace GraphQL
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseGraphQL<GuestSchema>("/guests");
+            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
 
             app.UseHttpsRedirection();
             app.UseMvc();
