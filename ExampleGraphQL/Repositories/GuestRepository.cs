@@ -7,9 +7,11 @@ namespace ExampleGraphQL.Repositories
 {
     public class GuestRepository : IGuestRepository
     {
-        public IEnumerable<Guest> GetGuests()
+        public List<Guest> Guests { get; set; }
+
+        public GuestRepository()
         {
-            return new List<Guest>()
+            Guests = new List<Guest>()
             {
                 new Guest()
                 {
@@ -61,6 +63,14 @@ namespace ExampleGraphQL.Repositories
                     RegisterDate = DateTime.Now.AddDays(-4)
                 }
             };
+        }
+
+        public IEnumerable<Guest> GetGuests() => Guests;
+
+        public Guest AddGuest(Guest guest)
+        {
+            Guests.Add(guest);
+            return guest;
         }
     }
 }

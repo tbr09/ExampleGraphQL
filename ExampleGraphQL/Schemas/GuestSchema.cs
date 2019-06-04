@@ -1,4 +1,5 @@
-﻿using ExampleGraphQL.Queries;
+﻿using ExampleGraphQL.Mutations;
+using ExampleGraphQL.Queries;
 using GraphQL;
 using GraphQL.Types;
 
@@ -9,6 +10,7 @@ namespace ExampleGraphQL.Schemas
         public GuestSchema(IDependencyResolver resolver) : base(resolver)
         {
             Query = resolver.Resolve<GuestQuery>();
+            Mutation = resolver.Resolve<GuestMutation>();
         }
     }
 }

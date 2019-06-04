@@ -1,6 +1,8 @@
 ﻿using ExampleGraphQL.Contracts;
+using ExampleGraphQL.Mutations;
 using ExampleGraphQL.Repositories;
 using ExampleGraphQL.Schemas;
+using ExampleGraphQL.Types;
 using GraphQL;
 using GraphQL.Server;
 using GraphQL.Server.Ui.Playground;
@@ -26,12 +28,14 @@ namespace ExampleGraphQL
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddTransient<IGuestRepository, GuestRepository>();
+            services.AddSingleton<IGuestRepository, GuestRepository>();
 
             services.AddScoped<IDependencyResolver>(x =>
                 new FuncDependencyResolver(x.GetRequiredService));
 
             services.AddScoped<GuestSchema>();
+            services.AddScoped<GuestInputType>();
+            services.AddScoped<GuestMutation>();
 
             services.AddGraphQL(x =>
             {
